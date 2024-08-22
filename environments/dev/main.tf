@@ -1,5 +1,5 @@
 module "vpc" {
-    source = "vgit::https://github.com/venky1912/terraform-modules.git//aws/modules/vpc?ref=main"
+    source = "git::https://github.com/venky1912/terraform-modules.git//aws/modules/vpc?ref=main"
     
   # Variables required by the network module
   vpc_cidr_block = var.vpc_cidr_block
