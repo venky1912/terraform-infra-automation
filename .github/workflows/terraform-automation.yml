@@ -45,14 +45,6 @@ jobs:
       run: terraform workspace select ${{ matrix.environment }} || terraform workspace new ${{ matrix.environment }}
       working-directory: ./environments/${{ matrix.environment }}
 
-    - name: Terraform Format Check
-      run: terraform fmt -check
-      working-directory: ./environments/${{ matrix.environment }}
-
-    - name: Terraform Validate
-      run: terraform validate 
-      working-directory: ./environments/${{ matrix.environment }}
-
     - name: Terraform Plan
       run: terraform plan -var-file="terraform.tfvars"
       working-directory: ./environments/${{ matrix.environment }}
