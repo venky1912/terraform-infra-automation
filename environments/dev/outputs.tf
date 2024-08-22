@@ -1,0 +1,19 @@
+output "vpc_id" {
+  description = "VPC ID"
+  value       = module.vpc.vpc_id
+}
+
+output "public_subnet_ids" {
+  description = "List of public subnet IDs"
+  value       = module.vpc.public_subnet_ids
+}
+
+output "private_subnet_ids" {
+    description = "List of Private Subnets"
+    value = module.vpc.private_subnet_ids
+}
+
+output "ec2_instance_ids" {
+  description = "List of EC2 instance IDs"
+  value       = module.compute.instance_ids
+}

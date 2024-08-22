@@ -1,0 +1,67 @@
+name: Terraform Automation CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  terraform:
+    name: Terraform Deploy
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        environment: [dev, staging, prod]  # Define the environments
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Authenticate to GitHub Modules Repo
+      run: |
+        git config --global url."https://${{ secrets.GH_PAT }}@github.com/".insteadOf "https://github.com/"
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.1.6
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-west-2
+
+    - name: Initialize Terraform
+      run: terraform init -backend-config="key=${{ matrix.environment }}/terraform.tfstate"
+      working-directory: ./environments/${{ matrix.environment }}
+
+    - name: Select Terraform Workspace
+      run: terraform workspace select ${{ matrix.environment }} || terraform workspace new ${{ matrix.environment }}
+      working-directory: ./environments/${{ matrix.environment }}
+
+    - name: Terraform Format Check
+      run: terraform fmt -check
+      working-directory: ./environments/${{ matrix.environment }}
+
+    - name: Terraform Validate
+      run: terraform validate 
+      working-directory: ./environments/${{ matrix.environment }}
+
+    - name: Terraform Plan
+      run: terraform plan -var-file="terraform.tfvars"
+      working-directory: ./environments/${{ matrix.environment }}
+
+    - name: Terraform Apply
+      if: github.ref == 'refs/heads/main'
+      run: terraform apply -auto-approve -var-file="terraform.tfvars"
+      working-directory: ./environments/${{ matrix.environment }}
+
+    - name: Terraform Output
+      run: terraform output
+      working-directory: ./environments/${{ matrix.environment }}
