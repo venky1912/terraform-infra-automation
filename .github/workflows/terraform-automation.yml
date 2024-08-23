@@ -57,3 +57,7 @@ jobs:
     - name: Terraform Output
       run: terraform output
       working-directory: ./environments/${{ matrix.environment }}
+
+    - name: Terraform Destroy
+      run: terraform plan -var-file="terraform.tfvars"
+      working-directory: ./environments/${{ matrix.environment }}
