@@ -12,8 +12,3 @@ output "private_subnet_ids" {
     description = "List of Private Subnets"
     value = module.vpc.private_subnet_ids
 }
-
-output "ec2_instance_ids" {
-  description = "List of EC2 instance IDs"
-  value       = module.compute.instance_ids
-}
